@@ -82,7 +82,7 @@ int read_file()
 	//file.open("SDB2.txt",ios::in);
 	//file.open("SDB3.txt",ios::in);
 	//file.open("SDB4.txt",ios::in);
-	file.open("D:\\CM-SPAM_data\\Coding Region Form\\txt\\DabieCR.fasta(105).inverse.txt", ios::in);
+	file.open("SDB.txt", ios::in);
 	//file.open("SDB6.txt",ios::in);
 	//file.open("SDB7.txt",ios::in);
 	//file.open("SDB8.txt",ios::in);
