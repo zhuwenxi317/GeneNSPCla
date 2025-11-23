@@ -62,18 +62,9 @@ int stlen;
 int mins, maxs;
 int threshold;
 char S[N];
-// ×Ô¶¨ÒåÃ¿²ã£¨´ÓµÚ2²ã¿ªÊ¼£©Ö§³Ö¶ÈË¥¼õÒò×ÓÁĞ±í£¬Ö±½ÓÔÚ´ËĞŞ¸Ä£º
-// ÀıÈç {0.9, 0.85, 0.8} ±íÊ¾£ºµÚ2²ã*0.9£¬µÚ3²ãÔÙ*0.85£¬µÚ4²ãÔÙ*0.8£»¸ü¸ß²ãÑØÓÃ0.8¡£
+
 vector<double> level_decay_factors;
-//char charset[] = { 'a','c','d','e','f','g','h','i','k','l','m','n','p','q','r','s','t','v','w','y','\0' };
-//char charset[] = { 'a','c','d','e','f','h','i','m','o','p','r','s','t','u','\0' };
-//char charset[] = { 'b','c','d','e','f','g','h','i','j','\0' };
-//char charset[] = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','\0' };
-//char charset[] = { 'a','b','c','d','e','f','g','\0' };
-//char charset[] = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','\0' };
-//char charset[] = { 'a','c','e','g','i','k','m','o','\0' };
-//char charset[] = { 'a','c','g','t','\0' };
-//char charset[] = { 'A','B','C','D','E','F','G','H','I','J','\0' };
+
 char charset[] = { 'A','C','G','T','\0' };
 int setlen = strlen(charset);
 vector <string>* freArr = new vector <string>[M];
@@ -87,7 +78,7 @@ int read_file()
 	//file.open("SDB2.txt",ios::in);
 	//file.open("SDB3.txt",ios::in);
 	//file.open("SDB4.txt",ios::in);
-	file.open("E:\\Coding Region Form(worked)\\DabieCR(inverse200).txt", ios::in);
+	file.open("SDB.txt", ios::in);
 	//file.open("SDB6.txt",ios::in);
 	//file.open("SDB7.txt",ios::in);
 	//file.open("SDB8.txt",ios::in);
@@ -97,7 +88,7 @@ int read_file()
 	string buff;
 	if (!file.is_open())
 	{
-		cout << "Î´´ò¿ª" << endl;
+		cout << "æœªæ‰“å¼€" << endl;
 		exit(EXIT_FAILURE);
 	}
 	int i = 0, strLen = 0;
@@ -172,16 +163,15 @@ bool nsp_to_pos(string s, int level)
 int calculate_dynamic_threshold(int level, int base_threshold) {
 	if (level <= 1) return base_threshold;
 
-	int idx = level - 2; // µÚ2²ã¶ÔÓ¦Ë÷Òı0
+	int idx = level - 2; // ç¬¬2å±‚å¯¹åº”ç´¢å¼•0
 	double f;
 
 	if (!level_decay_factors.empty()) {
 		if (idx < (int)level_decay_factors.size()) {
-			f = level_decay_factors[idx];  // ¶ÔÓ¦²ãµÄÒò×Ó
+			f = level_decay_factors[idx];
 		}
 		else {
-			f = level_decay_factors.back(); // ³¬³ö·¶Î§ÔòÊ¹ÓÃ×îºóÒ»¸ö¹Ì¶¨Öµ
-		}
+			f = level_decay_factors.back();
 	}
 	else {
 		f = 0.8;
@@ -335,7 +325,7 @@ void inneg(string s)
 		cand2 = cand2 + lasts;
 		pfrenum++;
 		int candsup = matchsup(cand2);
-		// Ê¹ÓÃ°´²ã¼¶µÄ¶¯Ì¬ãĞÖµ£¨inneg ¹ØÁª³õÊ¼²ã£¬°´ level=1 ´¦Àí£©
+		// ä½¿ç”¨æŒ‰å±‚çº§çš„åŠ¨æ€é˜ˆå€¼ï¼ˆinneg å…³è”åˆå§‹å±‚ï¼ŒæŒ‰ level=1 å¤„ç†ï¼‰
 		int current_threshold = calculate_dynamic_threshold(1, threshold);
 		if (candsup >= current_threshold)
 		{
@@ -366,7 +356,7 @@ void gen_candtwo()
 			string cand2 = cand + freArr[0][j];
 			int candsup = matchsup(cand2);
 			pfrenum++;
-			// ÖÖ×Ó²ã£¨ÊÓ×÷ level=1£©
+			// ç§å­å±‚ï¼ˆè§†ä½œ level=1ï¼‰
 			int current_threshold = calculate_dynamic_threshold(1, threshold);
 			if (candsup >= current_threshold)
 			{
@@ -392,10 +382,6 @@ int deal_len(string S)
 	len = length - 3;
 	return len;
 }
-
-// ...Ô­ÓĞ´úÂë£¨½á¹¹Ìå¶¨Òå¡¢ÆäËûº¯ÊıµÈ£©...
-
-// ĞÂÔö£º°´²ã¼¶¼ÆËã¶¯Ì¬ãĞÖµ£¨µÚ2²ã¿ªÊ¼°´ÓÃ»§¸ø³öµÄÒò×ÓÖğ²ãÀÛ¼ÆË¥¼õ£©
 
 
 void gen_candidate(int level)
@@ -426,7 +412,7 @@ void gen_candidate(int level)
 					if (flag == 1)
 					{
 						int candsup = matchsup(cand);
-						// Ê¹ÓÃ°´²ã¼¶µÄ¶¯Ì¬ãĞÖµ£¨±¾º¯ÊıÉú³ÉµÄÊÇÏÂÒ»²ã£¬¹ÊÓÃ level+1£©
+						// ä½¿ç”¨æŒ‰å±‚çº§çš„åŠ¨æ€é˜ˆå€¼ï¼ˆæœ¬å‡½æ•°ç”Ÿæˆçš„æ˜¯ä¸‹ä¸€å±‚ï¼Œæ•…ç”¨ level+1ï¼‰
 						int current_threshold = calculate_dynamic_threshold(level + 1, threshold);
 						if (candsup >= current_threshold)
 						{
@@ -460,7 +446,7 @@ void gen_candidate(int level)
 				{
 					pfrenum++;
 					int candsup = matchsup(cand);
-					// Ê¹ÓÃ°´²ã¼¶µÄ¶¯Ì¬ãĞÖµ£¨±¾º¯ÊıÉú³ÉµÄÊÇÏÂÒ»²ã£¬¹ÊÓÃ level+1£©
+					// ä½¿ç”¨æŒ‰å±‚çº§çš„åŠ¨æ€é˜ˆå€¼ï¼ˆæœ¬å‡½æ•°ç”Ÿæˆçš„æ˜¯ä¸‹ä¸€å±‚ï¼Œæ•…ç”¨ level+1ï¼‰
 					int current_threshold = calculate_dynamic_threshold(level + 1, threshold);
 					if (candsup >= current_threshold)
 					{
@@ -472,7 +458,7 @@ void gen_candidate(int level)
 						frep.len2 = 1;
 						fix[level].push_back(frep);
 						posfre[level - 1].push_back(cand);
-						// ÔÚÔ­Ê¼Âß¼­ÖĞ£¬ÕâÒ»·ÖÖ§Î´Ö±½ÓĞ´Èë freArr£»±£³ÖÒ»ÖÂ
+						// åœ¨åŸå§‹é€»è¾‘ä¸­ï¼Œè¿™ä¸€åˆ†æ”¯æœªç›´æ¥å†™å…¥ freArrï¼›ä¿æŒä¸€è‡´
 					}
 				}
 
@@ -482,7 +468,7 @@ void gen_candidate(int level)
 	}
 }
 
-// ...Ô­ÓĞ´úÂë£¨mainº¯ÊıµÈ£©...
+// ...åŸæœ‰ä»£ç ï¼ˆmainå‡½æ•°ç­‰ï¼‰...
 
 int matchp(gapnit* p, char* s)
 {
@@ -623,14 +609,14 @@ int main() {
 	cout << "input the threshold:" << endl;
 	cin >> threshold;
 
-	// ÔÚ´úÂëÖĞÖ±½ÓÉèÖÃÃ¿²ãË¥¼õÒò×Ó£¨´ÓµÚ2²ã¿ªÊ¼£©¡£ĞèÒª±ä¸üÊ±Ö»¸ÄÕâĞĞ£º
-	level_decay_factors = { 0.8, 0.75}; // Ê¾Àı£ºL2*0.80, L3¼°ÒÔºó*0.70£¨°´ĞèĞŞ¸Ä£©
 
-	// ÏÔÊ¾²ã¼¶ãĞÖµ²ßÂÔÔ¤ÀÀ£¨Ç°5²ã£©
-	cout << "\n===== ²ã¼¶ãĞÖµ²ßÂÔ£¨Ô¤ÀÀÇ°5²ã£© =====" << endl;
+	level_decay_factors = { 0.8, 0.7}; // ç¤ºä¾‹ï¼šL2*0.80, L3åŠä»¥å*0.70ï¼ˆæŒ‰éœ€ä¿®æ”¹ï¼‰
+
+
+	cout << "\n===== å±‚çº§é˜ˆå€¼ç­–ç•¥ï¼ˆé¢„è§ˆå‰5å±‚ï¼‰ =====" << endl;
 		for (int lv = 1; lv <= 5; ++lv) {
 			int thr = calculate_dynamic_threshold(lv, threshold);
-			cout << "²ã¼¶ " << lv << ": ãĞÖµ = " << thr << endl;
+			cout << "å±‚çº§ " << lv << ": é˜ˆå€¼ = " << thr << endl;
 		}
 	cout << "========================\n" << endl;
 
@@ -645,41 +631,38 @@ int main() {
 		f_level++;
 	}
 	DWORD endtime = GetTickCount();
-	cout << "ºòÑ¡Êı" << pfrenum << endl;
-	cout << "ÕıÆµ·±Êı" << pf << endl;
-	printf("Æµ·±¸ºÄ£Ê½Êı£º%d\n", frennum);
+	cout << "å€™é€‰æ•°" << pfrenum << endl;
+	cout << "æ­£é¢‘ç¹æ•°" << pf << endl;
+	printf("é¢‘ç¹è´Ÿæ¨¡å¼æ•°ï¼š%d\n", frennum);
 
-	// ...Ô­ÓĞÕıÆµ·±Ä£Ê½´òÓ¡´úÂë...
 
-	// ĞÂÔö£º±£´æ´¿Ä£Ê½Êı¾İ£¨²ã¼¶¡İ1£¬ÎŞÃèÊö£©
-	ofstream outFile("E:\\Coding Region Form(worked)\\DabieCR(inverse200)GONPM2,0,3,30000(0.8,0.75).txt");
+	ofstream outFile("Result.txt");
 	if (outFile.is_open()) {
-		// ±éÀú²ã¼¶¡İ1µÄÊı¾İ
+		// éå†å±‚çº§â‰¥1çš„æ•°æ®
 		for (int i = 1; i < f_level; ++i) {
-			// Ğ´Èëµ±Ç°²ã¼¶µÄËùÓĞÄ£Ê½£¨Ã¿ĞĞÒ»¸ö£©
+			// å†™å…¥å½“å‰å±‚çº§çš„æ‰€æœ‰æ¨¡å¼ï¼ˆæ¯è¡Œä¸€ä¸ªï¼‰
 			for (const auto& pattern : freArr[i]) {
 				outFile << pattern << endl;
 			}
 		}
 		outFile.close();
-		cout << "´¿Ä£Ê½Êı¾İÒÑ±£´æÖÁ£ºD:\\CM-SPAM_data\\example_ans.txt" << endl;
 	}
 	else {
-		cerr << "´íÎó£ºÎŞ·¨´ò¿ªÎÄ¼ş±£´æÊı¾İ" << endl;
+		cerr << "é”™è¯¯ï¼šæ— æ³•æ‰“å¼€æ–‡ä»¶ä¿å­˜æ•°æ®" << endl;
 	}
 
-	cout << "\n===== ÍÚ¾òµ½µÄÆµ·±ĞòÁĞ£¨·Ö²ãÏÔÊ¾£© =====" << endl;
-	for (int i = 1; i < f_level; ++i) { // ±éÀú²ã¼¶¡İ1µÄÊı¾İ
+	cout << "\n===== æŒ–æ˜åˆ°çš„é¢‘ç¹åºåˆ—ï¼ˆåˆ†å±‚æ˜¾ç¤ºï¼‰ =====" << endl;
+	for (int i = 1; i < f_level; ++i) {
 		if (!freArr[i].empty()) {
-			cout << "²ã¼¶" << i << "£º" << endl; // Ìí¼Ó²ã¼¶±êÊ¶
+			cout << "å±‚çº§" << i << "ï¼š" << endl;
 			for (const auto& pattern : freArr[i]) {
-				cout << "  " << pattern << endl; // Ä£Ê½Ëõ½øÏÔÊ¾
+				cout << "  " << pattern << endl;
 			}
-			cout << endl; // ²ã¼¶¼ä¿ÕĞĞ·Ö¸ô
+			cout << endl;
 		}
 	}
 
-	cout << "ºÄÊ±" << endtime - begintime << "ms. \n";
+	cout << "è€—æ—¶" << endtime - begintime << "ms. \n";
 	system("pause");
 	return 0;
 }
