@@ -412,7 +412,7 @@ void gen_candidate(int level)
 					if (flag == 1)
 					{
 						int candsup = matchsup(cand);
-						// 使用按层级的动态阈值（本函数生成的是下一层，故用 level+1）
+						
 						int current_threshold = calculate_dynamic_threshold(level + 1, threshold);
 						if (candsup >= current_threshold)
 						{
@@ -446,7 +446,7 @@ void gen_candidate(int level)
 				{
 					pfrenum++;
 					int candsup = matchsup(cand);
-					// 使用按层级的动态阈值（本函数生成的是下一层，故用 level+1）
+					
 					int current_threshold = calculate_dynamic_threshold(level + 1, threshold);
 					if (candsup >= current_threshold)
 					{
@@ -458,7 +458,7 @@ void gen_candidate(int level)
 						frep.len2 = 1;
 						fix[level].push_back(frep);
 						posfre[level - 1].push_back(cand);
-						// 在原始逻辑中，这一分支未直接写入 freArr；保持一致
+						
 					}
 				}
 
@@ -468,7 +468,6 @@ void gen_candidate(int level)
 	}
 }
 
-// ...原有代码（main函数等）...
 
 int matchp(gapnit* p, char* s)
 {
@@ -610,7 +609,7 @@ int main() {
 	cin >> threshold;
 
 
-	level_decay_factors = { 0.8, 0.7}; // 示例：L2*0.80, L3及以后*0.70（按需修改）
+	level_decay_factors = { 0.8, 0.7}; // 示例：L2*0.80, L3及以后*0.70（可更改）
 
 
 	cout << "\n===== 层级阈值策略（预览前5层） =====" << endl;
