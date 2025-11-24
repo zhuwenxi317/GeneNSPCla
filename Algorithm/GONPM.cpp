@@ -83,7 +83,7 @@ int read_file()
 	//file.open("SDB2.txt",ios::in);
 	//file.open("SDB3.txt",ios::in);
 	//file.open("SDB4.txt",ios::in);
-	file.open("E:\\Coding Region Form(worked)\\RotaCR(inverse200).txt", ios::in);
+	file.open("SDB.txt", ios::in);
 	//file.open("SDB6.txt",ios::in);
 	//file.open("SDB7.txt",ios::in);
 	//file.open("SDB8.txt",ios::in);
@@ -363,13 +363,13 @@ int deal_len(string S)
 	return len;a
 }
 
-// ...原有代码（结构体定义、其他函数等）...
+
 
 void gen_candidate(int level)
 {
 	int size = fix[level - 1].size();
 
-	// 根据当前层级动态计算阈值
+	// 根据当前层级动态计算阈值（可更改‘3’和‘1.3’）
 	int current_threshold = (level >= 3) ? (threshold / 1.3) : threshold;
 
 	for (int i = 0; i < size; i++)
@@ -396,7 +396,7 @@ void gen_candidate(int level)
 					if (flag == 1)
 					{
 						int candsup = matchsup(cand);
-						// 修改：使用动态阈值判断
+						// 使用动态阈值判断
 						if (candsup >= current_threshold)
 						{
 							frennum++;
@@ -449,7 +449,6 @@ void gen_candidate(int level)
 	}
 }
 
-// ...原有代码（main函数等）...
 
 int matchp(gapnit* p, char* s)
 {
@@ -604,10 +603,9 @@ void main() {
 	cout << "正频繁数" << pf << endl;
 	printf("频繁负模式数：%d\n", frennum);
 
-	// ...原有正频繁模式打印代码...
 
-	// 新增：保存纯模式数据（层级≥1，无描述）
-	ofstream outFile("E:\\Coding Region Form(worked)\\RotaCR(inverse200)GONP,0,3,16000,(3,1.1).txt");
+	// 保存纯模式数据（层级≥1，无描述）
+	ofstream outFile("Negative pattern.txt");
 	if (outFile.is_open()) {
 		// 遍历层级≥1的数据
 		for (int i = 1; i < f_level; ++i) {
@@ -617,7 +615,6 @@ void main() {
 			}
 		}
 		outFile.close();
-		cout << "纯模式数据已保存至：D:\\CM-SPAM_data\\Coding Region\\pure_frequent_patterns.txt" << endl;
 	}
 	else {
 		cerr << "错误：无法打开文件保存数据" << endl;
