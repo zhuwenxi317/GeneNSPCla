@@ -21,12 +21,7 @@ from sklearn.preprocessing import label_binarize
 
 class ViralSequenceClassifier:
     def __init__(self, classifiers: List[str] = ['svm', 'rf', 'lr', 'dt', 'knn', 'nb', 'mlp', 'gbm']):
-        """
-        初始化分类器
 
-        Args:
-            classifiers: 要使用的分类器列表
-        """
         self.classifiers = classifiers
         self.models = {}
         self.vectorizer = CountVectorizer(token_pattern=r'\b\w+\b')
@@ -34,7 +29,7 @@ class ViralSequenceClassifier:
         self.vectorizer_fit = False
 
     def load_sequence_data(self, virus_data: Dict[str, List[str]]) -> pd.DataFrame:
-        """加载并处理病毒序列数据"""
+        
         sequences, labels = [], []
         for virus, seq_list in virus_data.items():
             sequences.extend(seq_list)
@@ -43,7 +38,7 @@ class ViralSequenceClassifier:
         return pd.DataFrame({'sequence': sequences, 'label': labels})
 
     def preprocess_sequences(self, sequences: List[str]) -> np.ndarray:
-        """将带有 -1 分隔符的序列转换为特征向量"""
+        
         processed_sequences = []
         for seq in sequences:
             elements = [e.strip() for e in seq.split('-1') if e.strip()]
@@ -57,10 +52,10 @@ class ViralSequenceClassifier:
         return X
 
     def train(self, data: pd.DataFrame, test_size: float = 0.2, random_state: int = 42) -> Dict[str, Dict[str, float]]:
-        """训练并评估多个分类器"""
+        
         from sklearn.metrics import average_precision_score
 
-        # 准备特征和标签
+        
         X = self.preprocess_sequences(data['sequence'].tolist())
         y = self.label_encoder.fit_transform(data['label'])
         X_train, X_test, y_train, y_test = train_test_split(
@@ -91,7 +86,7 @@ class ViralSequenceClassifier:
                 )
             elif clf_name == 'nb':
                 clf = GaussianNB()
-                # ✅ GaussianNB 需要 dense 输入
+                
                 X_train_dense = X_train.toarray()
                 X_test_dense = X_test.toarray()
             elif clf_name == 'mlp':
@@ -104,9 +99,9 @@ class ViralSequenceClassifier:
                     n_estimators=100, learning_rate=0.1, max_depth=3, random_state=random_state
                 )
             else:
-                raise ValueError(f"不支持的分类器: {clf_name}")
+                raise ValueError(f"unsupport: {clf_name}")
 
-            # === 拟合模型 ===
+           
             if clf_name == 'nb':
                 clf.fit(X_train_dense, y_train)
                 y_pred = clf.predict(X_test_dense)
@@ -118,7 +113,7 @@ class ViralSequenceClassifier:
 
             self.models[clf_name] = clf
 
-            # === 指标计算 ===
+            
             metrics = {
                 'accuracy': accuracy_score(y_test, y_pred),
                 'precision': precision_score(y_test, y_pred, average='weighted', zero_division=0),
@@ -139,9 +134,9 @@ class ViralSequenceClassifier:
         return results
 
     def predict(self, sequences: List[str], clf_name: str = 'svm') -> List[Dict[str, Union[str, float]]]:
-        """对新序列进行预测"""
+        
         if clf_name not in self.models:
-            raise ValueError(f"未训练的分类器: {clf_name}")
+            raise ValueError(f"untrain_classifier: {clf_name}")
 
         X = self.preprocess_sequences(sequences)
         clf = self.models[clf_name]
@@ -204,7 +199,7 @@ if __name__ == "__main__":
     # sequences_file11 = read_sequences_from_file(file11_path)
     # sequences_file12 = read_sequences_from_file(file11_path)
     # sequences_file13 = read_sequences_from_file(file12_path)
-    # 假设将file1的序列作为目标病毒（例如Dabie）的序列，file2的序列作为其他病毒的序列
+    
     viral_sequences = {
         "DabieCR": sequences_file1,
         "DengueCR": sequences_file2,
@@ -224,18 +219,18 @@ if __name__ == "__main__":
     data2 = classifier.load_sequence_data(viral_sequences)
     results = classifier.train(data2)
 
-    # === 打印所有分类器结果 ===
-    print("\n模型评估结果：")
+    
+    print("\n result：")
     for clf_name, metrics in results.items():
-        print(f"\n{clf_name.upper()} 分类器:")
+        print(f"\n{clf_name.upper()} classifier:")
         for metric, value in metrics.items():
             print(f"  {metric}: {value:.4f}" if value is not None else f"  {metric}: None")
 
     classifier.save_model("multi_viral_classifier.pkl")
     loaded_classifier = ViralSequenceClassifier.load_model("multi_viral_classifier.pkl")
-    print("\n✅ 模型已保存并重新加载成功。")
+    print("\nload successful。")
 
-    # === 可视化部分（仅 SVM） ===
+    
     plt.rcParams["font.family"] = ["SimSun", "Microsoft YaHei", "SimHei"]
     plt.rcParams["axes.unicode_minus"] = False
 
@@ -246,7 +241,7 @@ if __name__ == "__main__":
     y_pred = clf.predict(X_all)
     y_score = clf.predict_proba(X_all)
 
-    # 混淆矩阵
+    # comfusion matrix
     cm = confusion_matrix(y_true, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=classifier.label_encoder.classes_)
     plt.figure(figsize=(8, 6))
@@ -255,7 +250,7 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.show()
 
-    # ROC 曲线
+    # ROC
     y_true_bin = label_binarize(y_true, classes=range(len(classifier.label_encoder.classes_)))
     plt.figure(figsize=(7, 6))
     for i, label in enumerate(classifier.label_encoder.classes_):
