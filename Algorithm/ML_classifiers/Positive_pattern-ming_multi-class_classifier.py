@@ -22,12 +22,7 @@ class ViralSequenceClassifier:
 
 
     def __init__(self, classifiers: List[str] = ['svm', 'rf']):
-        """
-        初始化分类器
 
-        Args:
-            classifiers: 要使用的分类器列表，支持'svm'和'rf'
-        """
         self.classifiers = classifiers
         self.models = {}
         self.vectorizer = CountVectorizer(token_pattern=r'\b\w+\b')  # 用于将序列转换为特征向量
@@ -35,15 +30,7 @@ class ViralSequenceClassifier:
         self.vectorizer_fit = False
 
     def load_sequence_data(self, virus_data: Dict[str, List[str]]) -> pd.DataFrame:
-        """
-        加载并处理病毒序列数据
 
-        Args:
-            virus_data: 字典，键为病毒名称，值为该病毒的频繁序列列表
-
-        Returns:
-            处理后的DataFrame，包含序列和标签
-        """
         sequences = []
         labels = []
         for virus, seq_list in virus_data.items():
@@ -58,9 +45,7 @@ class ViralSequenceClassifier:
         return data
 
     def preprocess_sequences(self, sequences: List[str]) -> np.ndarray:
-        """
-        处理含 #SUP 注释、以 -1 为分隔符的序列，转换为特征向量
-        """
+
         processed_sequences = []
         for seq in sequences:
             elements = []
@@ -76,12 +61,7 @@ class ViralSequenceClassifier:
             X = self.vectorizer.transform(processed_sequences)
         return X
 
-    # 确保train方法缩进为4个空格（与其他类方法一致）
     def train(self, data: pd.DataFrame, test_size: float = 0.2, random_state: int = 42) -> Dict[str, Dict[str, float]]:
-        """
-        训练并评估分类器（直接使用指定固定参数）
-        """
-        # 准备特征和标签（原有代码）
         X = self.preprocess_sequences(data['sequence'].tolist())
         y = self.label_encoder.fit_transform(data['label'])
         X_train, X_test, y_train, y_test = train_test_split(
@@ -90,38 +70,38 @@ class ViralSequenceClassifier:
 
         results = {}
         for clf_name in tqdm(self.classifiers, desc="Training classifiers"):  # 此处tqdm已正确导入
-            # 直接使用你指定的参数初始化分类器
+            
             if clf_name == 'svm':
                 clf = SVC(
                     probability=True,
                     random_state=random_state,
-                    kernel='rbf',  # 指定核类型
-                    C=1,  # 正则化强度
-                    gamma='scale',  # 核系数
-                    degree=3  # 保留指定参数（rbf核下不生效但保留）
+                    kernel='rbf', 
+                    C=1,  
+                    gamma='scale',  
+                    degree=3
                 )
             elif clf_name == 'rf':
                 clf = RandomForestClassifier(
                     random_state=random_state,
-                    n_estimators=100,  # 树的数量
-                    max_depth=None,  # 不限制树深度
-                    criterion='gini',  # 分裂标准
-                    min_samples_leaf=1,  # 叶节点最小样本数
-                    min_samples_split=2,  # 内部节点分裂最小样本数
-                    n_jobs=1  # 单进程避免Windows冲突
+                    n_estimators=100,  
+                    max_depth=None,  
+                    criterion='gini',  
+                    min_samples_leaf=1,  
+                    min_samples_split=2,  
+                    n_jobs=1 
                 )
             else:
-                raise ValueError(f"不支持的分类器: {clf_name}")
+                raise ValueError(f"unsupport: {clf_name}")
 
-            # 训练模型（直接使用固定参数）
+           
             clf.fit(X_train, y_train)
-            self.models[clf_name] = clf  # 保存模型
+            self.models[clf_name] = clf  
 
-            # 评估（原有逻辑）
+           
             y_pred = clf.predict(X_test)
             y_prob = clf.predict_proba(X_test) if hasattr(clf, 'predict_proba') else None
 
-            # 计算指标（保留原有逻辑）
+            
             metrics = {
                 'accuracy': accuracy_score(y_test, y_pred),
                 'precision': precision_score(y_test, y_pred, average='weighted'),#weighted,marco
@@ -137,18 +117,9 @@ class ViralSequenceClassifier:
 
 
     def predict(self, sequences: List[str], clf_name: str = 'svm') -> List[Dict[str, Union[str, float]]]:
-        """
-        对新序列进行分类预测
 
-        Args:
-            sequences: 待预测的序列列表
-            clf_name: 使用的分类器名称
-
-        Returns:
-            预测结果列表，每个结果包含类别和置信度
-        """
         if clf_name not in self.models:
-            raise ValueError(f"未训练的分类器: {clf_name}")
+            raise ValueError(f"untrain_classifier: {clf_name}")
 
         X = self.preprocess_sequences(sequences)
         clf = self.models[clf_name]
@@ -169,7 +140,7 @@ class ViralSequenceClassifier:
         return predictions
 
     def save_model(self, path: str = 'viral_classifier.pkl'):
-        """保存训练好的模型"""
+        
         joblib.dump({
             'models': self.models,
             'vectorizer': self.vectorizer,
@@ -178,7 +149,7 @@ class ViralSequenceClassifier:
 
     @classmethod
     def load_model(cls, path: str = 'viral_classifier.pkl'):
-        """加载已保存的模型"""
+        
         model_data = joblib.load(path)
         classifier = cls()
         classifier.models = model_data['models']
@@ -218,7 +189,7 @@ if __name__ == "__main__":
     # sequences_file11 = read_sequences_from_file(file11_path)
     # sequences_file12 = read_sequences_from_file(file11_path)
     # sequences_file13 = read_sequences_from_file(file12_path)
-    # 假设将file1的序列作为目标病毒（例如Dabie）的序列，file2的序列作为其他病毒的序列
+
     viral_sequences = {
         "HantaCR": sequences_file1,
         "RhinoCR": sequences_file2,
@@ -239,67 +210,63 @@ if __name__ == "__main__":
     results = classifier.train(data2)
     data2.to_csv(r'D:\CM-SPAM_data\Coding Region Form\data2(neigative_data2)\five.csv', index=False)
 
-    print("模型评估结果:")
+    print("Result:")
     for clf_name, metrics in results.items():
-        print(f"{clf_name.upper()}分类器(ONP):")
+        print(f"{clf_name.upper()}classifier(ONP):")
         for metric, value in metrics.items():
             print(f"  {metric}: {value:.4f}")
 
     classifier.save_model("multi_viral_classifier.pkl")
     loaded_classifier = ViralSequenceClassifier.load_model("multi_viral_classifier.pkl")
-    print("已加载模型，可用于预测。")
 
 
 
-    #可视化
-    # t-SNE 降维可视化（采样提升速度）
+    
+    # t-SNE 
     #classifier.visualize_tsne(data2, sample_size=3000, random_state=42, perplexity=30.0, n_iter=1000)
 
     # print(len(sequences_file1)+len(sequences_file2)+len(sequences_file3)+len(sequences_file4)+len(sequences_file5)+len(sequences_file6)+len(sequences_file7)+len(sequences_file8)+len(sequences_file9)+len(sequences_file10)+len(sequences_file11)+len(sequences_file12))
 
-    # 设置中文字体，确保中文正常显示
     plt.rcParams["font.family"] = ["SimHei", "WenQuanYi Micro Hei", "Heiti TC"]
 
-    # 计算每个病毒序列的数量
     counts = [len(seq) for seq in viral_sequences.values()]
 
-    # 获取病毒名称作为标签
     virus_names = list(viral_sequences.keys())
 
-    # 创建条形图
-    plt.figure(figsize=(14, 7))  # 调整图表宽度以适应较多的标签
+
+    plt.figure(figsize=(14, 7)) 
     bars = plt.bar(virus_names, counts, color='skyblue')
 
-    # 在每个条形上方显示具体数值
+    
     for bar in bars:
         height = bar.get_height()
         plt.text(bar.get_x() + bar.get_width() / 2., height,
                  f'{height}', ha='center', va='bottom', fontsize=10)
 
-    # 添加标题和标签
-    plt.title('不同病毒序列数量对比')
-    plt.xlabel('病毒类型')
-    plt.ylabel('序列数量')
+    
+    plt.title('compare')
+    plt.xlabel('type')
+    plt.ylabel('number')
 
-    # 旋转x轴标签以便更好显示
-    plt.xticks(rotation=45, ha='right')  # 向右对齐旋转后的标签
+    
+    plt.xticks(rotation=45, ha='right')  
 
-    # 调整布局
+    
     plt.tight_layout()
 
-    # 显示图形
+    
     plt.show()
 
     clf_name = 'svm'
     clf = classifier.models[clf_name]
 
-    # 特征与标签
+    # feature and label
     X_all = classifier.preprocess_sequences(data2['sequence'].tolist())
     y_true = classifier.label_encoder.transform(data2['label'])
     y_pred = clf.predict(X_all)
     y_score = clf.predict_proba(X_all)
 
-    # ========== 1️⃣ 混淆矩阵 ==========
+    # ========== comfusion matrix ==========
     cm = confusion_matrix(y_true, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                                   display_labels=classifier.label_encoder.classes_)
@@ -310,7 +277,7 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.show()
 
-    # ========== 2️⃣ ROC 曲线 ==========
+    # ========== 2️⃣ ROC curve ==========
     y_true_bin = label_binarize(y_true, classes=range(len(classifier.label_encoder.classes_)))
 
     plt.figure(figsize=(7, 6))
