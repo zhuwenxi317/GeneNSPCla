@@ -1,5 +1,5 @@
 def encode_sequence(seq):
-    """将DNA序列按照规则编码"""
+    
     encoded = []
     i = 0
     while i < len(seq):
@@ -53,23 +53,22 @@ def encode_file(input_path, output_path):
 
         encoded_lines = [encode_sequence(line) for line in lines]
 
-        # 打印编码结果
-        print("\n编码结果:")
+        
+        print("\nresult:")
         for encoded in encoded_lines:
             print(encoded)
 
-        # 写入文件
+        
         with open(output_path, 'w') as outfile:
             outfile.write('\n'.join(encoded_lines) + '\n')
 
-        print(f"\n编码完成，结果已保存到: {output_path}")
+        print(f"\nsuccess: {output_path}")
     except Exception as e:
-        print(f"处理文件时出错: {e}")
+        print(f"error: {e}")
 
 
-# 直接在代码中修改文件路径 ↓↓↓
-INPUT_FILE = r'E:\Coding Region Form(worked)\DabieCR(inverse200)GONPM2,0,3,30000(0.88,0.83,0.73,0.63).txt'  # 输入文件路径
-OUTPUT_FILE = r'E:\Coding Region Form(worked)\DabieCR(inverse200)GONPM2,0,3,30000(0.88,0.83,0.73,0.63)(sameform).txt'  # 输出文件路径
 
+INPUT_FILE = r'E:\Coding Region Form(worked)\DabieCR(inverse200)GONPM2,0,3,30000(0.88,0.83,0.73,0.63).txt'  # Input
+OUTPUT_FILE = r'E:\Coding Region Form(worked)\DabieCR(inverse200)GONPM2,0,3,30000(0.88,0.83,0.73,0.63)(sameform).txt'  # Output
 if __name__ == "__main__":
     encode_file(INPUT_FILE, OUTPUT_FILE)
