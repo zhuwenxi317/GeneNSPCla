@@ -106,13 +106,6 @@ A key advantage of the GeneNSPCla framework is its balance between classificatio
 
 ![ROC Curves and Confusion Matrix](Figure/ROCandMatrix(4).png)
 
-- **ONP-Miner**: Fast running speed (≈120s per dataset) but low accuracy (78.2%), suitable for preliminary baseline tests.
-
-- **GONPM**: Moderate speed (≈180s per dataset) and high accuracy (85.7%), balancing performance and efficiency.
-
-- **GONPM+**: Slightly longer running time (≈220s per dataset) but the highest accuracy (91.3%), recommended for high-precision classification tasks.
-
-The improved algorithms (GONPM, GONPM+) achieve higher accuracy by optimizing pattern extraction logic, without a significant increase in running time—making them suitable for large-scale genomic data analysis.
 
 # 🖥️ Usage Guide
 
