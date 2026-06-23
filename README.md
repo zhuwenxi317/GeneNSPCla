@@ -177,6 +177,7 @@ The ONP-Miner baseline is based on published work. GONPM and GONPM+ are improved
 
 ---
 
+<<<<<<< HEAD
 ## 环境要求
 
 ### 数据挖掘算法（C++）
@@ -187,6 +188,8 @@ The ONP-Miner baseline is based on published work. GONPM and GONPM+ are improved
 | 操作系统 | Windows（代码使用了 `<windows.h>`） |
 
 ### ML 分类 & 预处理（Python）
+=======
+>>>>>>> e62faeb5b4fb45d33b19d1317a9bc605c86343db
 
 | 包 | 版本 |
 |----|------|
