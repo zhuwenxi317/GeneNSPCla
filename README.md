@@ -1,8 +1,6 @@
-[English](#english) | [中文](#chinese)
-
----
-
-<a id="english"></a>
+<details open>
+<summary><b>English</b> · 中文</summary>
+<br>
 
 # GeneNSPCla — Genomic Negative Sequential Pattern Classification
 
@@ -163,11 +161,11 @@ GeneNSPCla/
 
 The ONP-Miner baseline is based on published work. GONPM and GONPM+ are improved algorithms designed specifically for genomic sequence negative pattern mining.
 
----
+</details>
 
----
-
-<a id="chinese"></a>
+<details>
+<summary>English · <b>中文</b></summary>
+<br>
 
 # GeneNSPCla — 基于负序列模式挖掘的基因组分类框架
 
@@ -177,7 +175,6 @@ The ONP-Miner baseline is based on published work. GONPM and GONPM+ are improved
 
 ---
 
-<<<<<<< HEAD
 ## 环境要求
 
 ### 数据挖掘算法（C++）
@@ -188,8 +185,6 @@ The ONP-Miner baseline is based on published work. GONPM and GONPM+ are improved
 | 操作系统 | Windows（代码使用了 `<windows.h>`） |
 
 ### ML 分类 & 预处理（Python）
-=======
->>>>>>> e62faeb5b4fb45d33b19d1317a9bc605c86343db
 
 | 包 | 版本 |
 |----|------|
@@ -329,3 +324,5 @@ GeneNSPCla/
 ## 致谢
 
 ONP-Miner 基线算法基于已发表的研究工作。GONPM 和 GONPM+ 是针对基因组序列负模式挖掘特性专门优化的改进算法。
+
+</details>
