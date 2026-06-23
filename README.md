@@ -1,6 +1,6 @@
 <div align="center">
 
-[![IEEE BIBM](https://img.shields.io/badge/📄_IEEE_BIBM-2024-blue?style=flat-square)](https://ieeexplore.ieee.org/document/11356608)
+[![IEEE BIBM](https://img.shields.io/badge/📄_IEEE_BIBM-2025-blue?style=flat-square)](https://ieeexplore.ieee.org/document/11356608)
 [![arXiv](https://img.shields.io/badge/📄_arXiv-2604.25968v1-b31b1b?style=flat-square)](https://arxiv.org/abs/2604.25968v1)
 
 </div>
