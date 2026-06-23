@@ -1,127 +1,328 @@
-# GeneNSPCla Framework (Genomic Negative Sequential Pattern Classification)
+[English](#english) | [中文](#chinese)
 
-✨ A dedicated framework for genomic data classification based on **Negative Sequential Pattern Mining**, specifically optimized for RNA viral genomic data analysis. This framework provides complete tools for pattern mining, dataset preprocessing, and classification task support.
+---
 
-# 📋 Table of Contents
+<a id="english"></a>
 
-- Architecture Overview
+# GeneNSPCla — Genomic Negative Sequential Pattern Classification
 
-- Folder Structure & Details
+A framework for **RNA virus classification** based on **Negative Sequential Pattern (NSP) mining**. It extracts frequent negative patterns from genomic sequences, then uses them as features to train machine learning classifiers.
 
-- Experimental Results
+![Framework Architecture](Figure/GenNSPCla+.png)
 
-- Accuracy vs Efficiency
+---
 
-- Usage Guide
+## Environment Requirements
 
-# 🏗️ Architecture Overview
+### For Data Mining (C++)
 
-The GeneNSPCla framework follows a **three-stage pipeline** to achieve accurate genomic classification, integrating pattern mining, data preprocessing, and machine learning classification. Below is the core workflow:
+| Item | Version / Note |
+|------|----------------|
+| C++ Compiler | MSVC (Visual Studio) or GCC |
+| OS | Windows (uses `<windows.h>`) |
 
-1. **Data Preprocessing** 🧹: Convert raw genomic sequences (A/C/G/T) into numerical encoding for efficient algorithm processing, ensuring data consistency and adaptability for pattern mining.
+### For ML Classification & Preprocessing (Python)
 
-2. **Negative Pattern Mining** 🔍: Utilize improved mining algorithms (GONPM, GONPM+) to extract frequent negative patterns from preprocessed genomic data, capturing unique characteristics of different RNA viruses.
+| Package | Version |
+|---------|---------|
+| Python | ≥ 3.7 |
+| numpy | ≥ 1.19 |
+| pandas | ≥ 1.2 |
+| scikit-learn | ≥ 0.24 |
+| matplotlib | ≥ 3.3 |
+| joblib | ≥ 1.0 |
+| tqdm | ≥ 4.50 |
+| imbalanced-learn | ≥ 0.8 |
 
-3. **Classification** 📊: Use the extracted negative patterns as feature sequences to train machine learning classifiers, realizing accurate classification of RNA viral types.
+Install in one line:
 
-The framework is designed to address the complexity of genomic data, with improved algorithms that outperform traditional methods in both pattern quality and mining efficiency.
+```bash
+pip install numpy pandas scikit-learn matplotlib joblib tqdm imbalanced-learn
+```
 
-![GeneNSPCla Framework Architecture](Figure/GenNSPCla+.png)
+---
 
-# 📂 Folder Structure & Details
+## Reproduction Steps
 
-The framework is organized into 4 core folders, each with clear functional positioning:
+The pipeline follows **three stages**:
 
-## 1. Algorithm 🧮
+```
+Raw genomic sequences → [Preprocessing] → Encoded sequences → [NSP Mining] → Frequent negative patterns → [ML Classifier] → Classification result
+```
 
-This folder contains three core algorithm modules, covering the entire process from data preprocessing to pattern mining and classification:
+### Step 1 — Preprocessing
 
-### 1.1 datamining algorithm
+Convert raw A/C/G/T genomic sequences into numerical format for the mining algorithms.
 
-Contains three state-of-the-art negative sequential pattern mining algorithms, tailored for genomic data characteristics:
+```bash
+# Run encoding script
+cd Algorithm/Preprocessing
+python encoding.py
+```
 
-- **ONP-Miner**: The original negative sequential pattern mining algorithm, serving as the baseline for performance comparison.
+**Encoding rules:**
+| Nucleotide | Encoded |
+|------------|---------|
+| A | 1 |
+| C | 2 |
+| G | 3 |
+| T | 4 |
+| Separator (between bases) | -1 |
+| Terminator (end of sequence) | -2 |
 
-- **GONPM**: Our first improved algorithm, optimized for biological genomic data, enhancing pattern relevance and mining speed.
+The preprocessed data is also available directly under `Dataset/After preprocess/`.
 
-- **GONPM+**: The enhanced version of GONPM, further improving the ability to extract meaningful frequent negative patterns from large-scale genomic sequences, with better adaptability to viral data.
+### Step 2 — Negative Pattern Mining (Data Mining Algorithm)
 
-### 1.2 ML_classifier
+Compile and run the mining algorithm to extract **frequent negative patterns** from the preprocessed genomic data.
 
-Includes two types of classifiers for genomic sequence classification, based on different pattern types:
+```bash
+cd Algorithm/Data_Mining_Algorithm
 
-- **Positive Pattern Mining Classifier**: Classifier trained using frequent positive patterns extracted from genomic data, serving as a comparative baseline.
+# Compile (MSVC example)
+cl /EHsc GONPM+.cpp
+# or with GCC
+g++ -o GONPM+ GONPM+.cpp
 
-- **Negative Pattern Mining Classifier**: Core classifier of the framework, trained using frequent negative patterns (extracted by GONPM+), achieving higher classification accuracy for RNA viral data.
+# Run
+./GONPM+
+```
 
-### 1.3 preprocessing
+Three algorithms are provided (GONPM+ is recommended):
 
-Contains data preprocessing algorithms specifically designed for genomic sequences, ensuring data quality and compatibility with subsequent mining and classification steps:
+| Algorithm | File | Accuracy | Speed | Role |
+|-----------|------|----------|-------|------|
+| **ONP-Miner** | `onp-Miner.cpp` | ~78.2% | ~120s | Baseline |
+| **GONPM** | `GONPM.cpp` | ~85.7% | ~180s | Improved |
+| **GONPM+** ★ | `GONPM+.cpp` | ~91.3% | ~220s | Recommended |
 
-- Calculate genomic sequence length: Statistically analyze the length of each viral genomic sequence for data distribution analysis.
+The mined negative patterns are saved in the `Negative patterns/` folder (300–600 patterns per virus).
 
-- Nucleotide encoding: Convert A/C/G/T nucleotides into numerical values (A→1, C→2, G→3, T→4) for algorithm processing.
+### Step 3 — ML Classification
 
-- Format conversion: Standardize the format of genomic sequences, including adding separators (-1 between bases) and terminators (-2 at the end of sequences) to meet the input requirements of mining algorithms.
+Use the extracted negative patterns as feature sequences to train classifiers.
 
-## 2. Dataset 📁
+```bash
+cd Algorithm/ML_classifiers
+python Negative_pattern-mining_multi-class_classifier.py
+```
 
-Provides complete RNA viral genomic data, including raw and preprocessed versions for direct use in experiments:
+The classifier supports 8 models: **SVM, Random Forest, Logistic Regression, Decision Tree, KNN, Naive Bayes, MLP, Gradient Boosting**.
 
-- **Original**: Contains genomic data of **8 types of RNA viruses**, stored in coding region format (raw A/C/G/T sequences).
+For comparison, a positive-pattern classifier is also provided:
+```bash
+python Positive_pattern-ming_multi-class_classifier.py
+```
 
-- **After Preprocessing**: Preprocessed dataset with standardized encoding for algorithm compatibility:
+---
 
-- Nucleotide encoding: A→1, C→2, G→3, T→4
+## Project Structure
 
-- Separator: Each base is separated by -1
+```
+GeneNSPCla/
+├── Algorithm/
+│   ├── Data_Mining_Algorithm/   ← C++ NSP mining algorithms
+│   │   ├── onp-Miner.cpp        (baseline)
+│   │   ├── GONPM.cpp            (improved)
+│   │   └── GONPM+.cpp           (recommended)
+│   ├── ML_classifiers/          ← Python classifiers
+│   │   ├── Negative_pattern-mining_multi-class_classifier.py
+│   │   └── Positive_pattern-ming_multi-class_classifier.py
+│   └── Preprocessing/           ← Data preparation scripts
+│       ├── encoding.py
+│       ├── format change.py
+│       ├── calculate length.py
+│       └── pattern length count.py
+├── Dataset/
+│   ├── Original/                ← Raw genomic sequences (A/C/G/T)
+│   └── After preprocess/        ← Encoded sequences (ready for mining)
+├── Negative patterns/           ← Mined negative patterns per virus
+├── Figure/                      ← Figures (architecture, results, ROC)
+└── README.md
+```
 
-- Terminator: -2 is used to mark the end of a sequence
+**8 RNA virus types:** Dabie, Dengue, Ebola, Hanta, Hepaci, HIV, MERS, Rota.
 
-## 3. Negative Patterns 🔬
+---
 
-Stores the frequent negative patterns extracted for each RNA virus, which serve as core features for classification:
+## Results
 
-- Pattern source: Extracted by the **GONPM+ algorithm** from the original genomic dataset (Section 2.1).
+| Algorithm | Accuracy | Running Time |
+|-----------|----------|--------------|
+| ONP-Miner | 78.2% | ~120s |
+| GONPM | 85.7% | ~180s |
+| **GONPM+** | **91.3%** | ~220s |
 
-- Pattern quantity: Restricted to 300–600 per virus, ensuring a balance between feature richness and computational efficiency.
+![Results](Figure/Result.png)
+![ROC and Confusion Matrix](Figure/ROCandMatrix(4).png)
+![Sample Patterns](Figure/sample in positive and negative_new.png)
 
-- Function: Act as feature sequences to represent viral genomic characteristics, serving as inputs for machine learning classifiers (e.g., SVM, Random Forest) in classification tasks.
+---
 
-![Sample of Positive and Negative Patterns](Figure/sample in positive and negative_new.png)
+## Acknowledgements
 
-## 4. Figure 📊
+The ONP-Miner baseline is based on published work. GONPM and GONPM+ are improved algorithms designed specifically for genomic sequence negative pattern mining.
 
-This folder contains vector graphs in PDF format from the related paper, which are used to visualize the framework architecture, experimental results, pattern samples, and performance metrics for intuitive display in this README.
+---
 
-# 📈 Experimental Results
+---
 
-We evaluated the performance of the GeneNSPCla framework on the 8-type RNA virus dataset, comparing the classification accuracy of different mining algorithms. The results show that our improved algorithms significantly outperform the baseline.
+<a id="chinese"></a>
 
-![Experimental Results Visualization](Figure/Result.png)
+# GeneNSPCla — 基于负序列模式挖掘的基因组分类框架
 
-# ⚖️ Accuracy vs Efficiency
+一个基于**负序列模式（NSP）挖掘**的 **RNA 病毒分类**框架。从基因组序列中提取频繁负模式，作为特征训练机器学习分类器。
 
-A key advantage of the GeneNSPCla framework is its balance between classification accuracy and mining efficiency. Below is a comparison of the three algorithms in terms of running time (on a single CPU, 16GB RAM) and accuracy, with corresponding ROC curves and confusion matrices shown below:
+![框架架构](Figure/GenNSPCla+.png)
 
-![ROC Curves and Confusion Matrix](Figure/ROCandMatrix(4).png)
+---
 
-- **ONP-Miner**: Fast running speed (≈120s per dataset) but low accuracy (78.2%), suitable for preliminary baseline tests.
+## 环境要求
 
-- **GONPM**: Moderate speed (≈180s per dataset) and high accuracy (85.7%), balancing performance and efficiency.
+### 数据挖掘算法（C++）
 
-- **GONPM+**: Slightly longer running time (≈220s per dataset) but the highest accuracy (91.3%), recommended for high-precision classification tasks.
+| 项目 | 版本 / 说明 |
+|------|-------------|
+| C++ 编译器 | MSVC（Visual Studio）或 GCC |
+| 操作系统 | Windows（代码使用了 `<windows.h>`） |
 
-The improved algorithms (GONPM, GONPM+) achieve higher accuracy by optimizing pattern extraction logic, without a significant increase in running time—making them suitable for large-scale genomic data analysis.
+### ML 分类 & 预处理（Python）
 
-# 🖥️ Usage Guide
+| 包 | 版本 |
+|----|------|
+| Python | ≥ 3.7 |
+| numpy | ≥ 1.19 |
+| pandas | ≥ 1.2 |
+| scikit-learn | ≥ 0.24 |
+| matplotlib | ≥ 3.3 |
+| joblib | ≥ 1.0 |
+| tqdm | ≥ 4.50 |
+| imbalanced-learn | ≥ 0.8 |
 
-1. Prepare the dataset: Use the preprocessed dataset in the `Dataset/After Preprocessing` folder, or preprocess your own genomic data following the same encoding rules via the algorithms in `Algorithm/preprocessing`.
+一键安装：
 
-2. Run pattern mining: Select an algorithm from the `Algorithm/datamining algorithm` folder (GONPM+ is recommended for best results) to extract frequent negative patterns.
+```bash
+pip install numpy pandas scikit-learn matplotlib joblib tqdm imbalanced-learn
+```
 
-3. Classification: Use the extracted patterns (from `Negative Patterns` folder) as features, and select a classifier from `Algorithm/ML_classifier` to train and perform viral type classification.
+---
 
-# 🙏 Acknowledgements
+## 复现步骤
 
-This framework is developed for genomic negative sequential pattern classification research. We appreciate the open-source community for providing baseline algorithms and dataset support.
+整个流程分为**三个阶段**：
+
+```
+原始基因组序列 → [预处理] → 编码序列 → [负模式挖掘] → 频繁负模式 → [ML分类器] → 分类结果
+```
+
+### 第 1 步 — 预处理
+
+将原始 A/C/G/T 基因组序列转换为算法可处理的数值格式。
+
+```bash
+cd Algorithm/Preprocessing
+python encoding.py
+```
+
+**编码规则：**
+| 核苷酸 | 编码值 |
+|--------|--------|
+| A | 1 |
+| C | 2 |
+| G | 3 |
+| T | 4 |
+| 分隔符（碱基之间） | -1 |
+| 终止符（序列结尾） | -2 |
+
+预处理后的数据也可直接使用 `Dataset/After preprocess/` 目录下的文件。
+
+### 第 2 步 — 负模式挖掘（数据挖掘算法）
+
+编译并运行挖掘算法，从预处理数据中提取**频繁负模式**。
+
+```bash
+cd Algorithm/Data_Mining_Algorithm
+
+# 编译（MSVC 示例）
+cl /EHsc GONPM+.cpp
+# 或使用 GCC
+g++ -o GONPM+ GONPM+.cpp
+
+# 运行
+./GONPM+
+```
+
+提供三种算法（推荐使用 GONPM+）：
+
+| 算法 | 文件 | 准确率 | 运行时间 | 定位 |
+|------|------|--------|----------|------|
+| **ONP-Miner** | `onp-Miner.cpp` | ~78.2% | ~120s | 基线对比 |
+| **GONPM** | `GONPM.cpp` | ~85.7% | ~180s | 改进版 |
+| **GONPM+** ★ | `GONPM+.cpp` | ~91.3% | ~220s | 推荐使用 |
+
+挖掘出的负模式保存在 `Negative patterns/` 目录中（每种病毒 300–600 条模式）。
+
+### 第 3 步 — ML 分类
+
+将提取的负模式作为特征序列，训练分类器进行病毒类型识别。
+
+```bash
+cd Algorithm/ML_classifiers
+python Negative_pattern-mining_multi-class_classifier.py
+```
+
+分类器支持 8 种模型：**SVM、随机森林、逻辑回归、决策树、KNN、朴素贝叶斯、多层感知机、梯度提升**。
+
+作为对照，也提供了正模式分类器：
+```bash
+python Positive_pattern-ming_multi-class_classifier.py
+```
+
+---
+
+## 项目结构
+
+```
+GeneNSPCla/
+├── Algorithm/
+│   ├── Data_Mining_Algorithm/   ← C++ 负模式挖掘算法
+│   │   ├── onp-Miner.cpp        （基线算法）
+│   │   ├── GONPM.cpp            （改进算法）
+│   │   └── GONPM+.cpp           （推荐使用）
+│   ├── ML_classifiers/          ← Python 分类器
+│   │   ├── Negative_pattern-mining_multi-class_classifier.py
+│   │   └── Positive_pattern-ming_multi-class_classifier.py
+│   └── Preprocessing/           ← 数据预处理脚本
+│       ├── encoding.py
+│       ├── format change.py
+│       ├── calculate length.py
+│       └── pattern length count.py
+├── Dataset/
+│   ├── Original/                ← 原始基因组序列（A/C/G/T）
+│   └── After preprocess/        ← 编码后的序列（可直接用于挖掘）
+├── Negative patterns/           ← 各病毒挖掘出的频繁负模式
+├── Figure/                      ← 图表（框架图、结果、ROC等）
+└── README.md
+```
+
+**8 种 RNA 病毒：** 大别山病毒、登革病毒、埃博拉病毒、汉坦病毒、丙肝病毒、HIV、MERS 病毒、轮状病毒。
+
+---
+
+## 实验结果
+
+| 算法 | 准确率 | 运行时间 |
+|------|--------|----------|
+| ONP-Miner | 78.2% | ~120s |
+| GONPM | 85.7% | ~180s |
+| **GONPM+** | **91.3%** | ~220s |
+
+![实验结果](Figure/Result.png)
+![ROC曲线与混淆矩阵](Figure/ROCandMatrix(4).png)
+![正负模式示例](Figure/sample in positive and negative_new.png)
+
+---
+
+## 致谢
+
+ONP-Miner 基线算法基于已发表的研究工作。GONPM 和 GONPM+ 是针对基因组序列负模式挖掘特性专门优化的改进算法。
